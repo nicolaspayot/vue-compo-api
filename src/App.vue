@@ -1,29 +1,47 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
-  </div>
+  <SearchWrapper />
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "./components/HelloWorld.vue";
+import Vue from "vue";
 
-@Component({
+import SearchWrapper from "./components/SearchWrapper.vue";
+
+export default Vue.extend({
   components: {
-    HelloWorld
+    SearchWrapper
   }
-})
-export default class App extends Vue {}
+});
 </script>
 
 <style lang="scss">
-#app {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+p,
+h1,
+h2 {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+  font-size: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #eb4d6d;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  color: #fff;
   margin-top: 60px;
 }
 </style>
