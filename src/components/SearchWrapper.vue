@@ -11,7 +11,7 @@
 
     <section class="search__results" v-else>
       <SearchResult
-        v-for="repository of orderedByRepositories"
+        v-for="repository of orderedRepositories"
         :key="repository.id"
         :repository="repository"
       />
@@ -50,7 +50,7 @@ export default Vue.extend({
   },
 
   computed: {
-    orderedByRepositories(): RawRepository[] {
+    orderedRepositories(): RawRepository[] {
       return orderBy(this.searchState.repositories, this.orderByProp, "desc");
     }
   },
