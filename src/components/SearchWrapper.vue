@@ -1,6 +1,6 @@
 <template>
   <main class="search">
-    <SearchInput v-model="searchState.query" @enter="submitSearch" />
+    <SearchInput v-model="searchState.query" @enter="runSearch" />
 
     <SearchOrder
       v-model="orderByProp"
@@ -56,7 +56,7 @@ export default Vue.extend({
   },
 
   methods: {
-    search(): void {
+    runSearch(): void {
       if (!this.searchState.query) {
         this.searchState.repositories = [];
         return;
@@ -73,16 +73,12 @@ export default Vue.extend({
         .finally(() => {
           this.searchState.loading = false;
         });
-    },
-
-    submitSearch(): void {
-      this.search();
     }
   },
 
   mounted(): void {
     this.searchState.query = "vue";
-    this.search();
+    this.runSearch();
   }
 });
 </script>
