@@ -2,19 +2,12 @@
   <main class="search">
     <SearchInput v-model="searchState.query" @enter="runSearch" />
 
-    <SearchOrder
-      v-model="orderByProp"
-      v-if="!searchState.loading && searchState.repositories.length > 1"
-    />
+    <SearchOrder v-model="orderByProp" v-if="!searchState.loading && searchState.repositories.length > 1" />
 
     <SearchLoader v-if="searchState.loading" />
 
     <section class="search__results" v-else>
-      <SearchResult
-        v-for="repository of orderedRepositories"
-        :key="repository.id"
-        :repository="repository"
-      />
+      <SearchResult v-for="repository of orderedRepositories" :key="repository.id" :repository="repository" />
     </section>
   </main>
 </template>
@@ -64,9 +57,7 @@ export default Vue.extend({
 
       this.searchState.loading = true;
       githubAPI
-        .get(
-          `/search/repositories?page=1&per_page=10&q=${this.searchState.query}`
-        )
+        .get(`/search/repositories?page=1&per_page=10&q=${this.searchState.query}`)
         .then((response: AxiosResponse<RawResult>) => {
           this.searchState.repositories = response.data.items;
         })

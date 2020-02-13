@@ -41,8 +41,7 @@ export default Vue.extend({
 
     &:hover {
       transform: scale(1.01);
-      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.2),
-        0 16px 28px rgba(0, 0, 0, 0.24);
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.2), 0 16px 28px rgba(0, 0, 0, 0.24);
     }
   }
 
