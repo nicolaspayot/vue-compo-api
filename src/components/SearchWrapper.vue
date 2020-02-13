@@ -2,7 +2,7 @@
   <main class="search">
     <SearchInput v-model="searchState.query" @enter="runSearch" />
 
-    <SearchOrder v-model="orderByProp" v-if="!searchState.loading && searchState.repositories.length > 1" />
+    <SearchOrder v-model="orderByProp" v-if="!searchState.loading && searchState.results.length > 1" />
 
     <SearchLoader v-if="searchState.loading" />
 
@@ -35,31 +35,31 @@ export default Vue.extend({
     return {
       orderByProp: "score",
       searchState: {
-        query: "",
+        query: "vue",
         loading: false,
-        repositories: []
-      } as SearchState
+        results: []
+      } as SearchState<RawRepository>
     };
   },
 
   computed: {
     orderedRepositories(): RawRepository[] {
-      return orderBy(this.searchState.repositories, this.orderByProp, "desc");
+      return orderBy(this.searchState.results, this.orderByProp, "desc");
     }
   },
 
   methods: {
     runSearch(): void {
       if (!this.searchState.query) {
-        this.searchState.repositories = [];
+        this.searchState.results = [];
         return;
       }
 
       this.searchState.loading = true;
       githubAPI
         .get(`/search/repositories?page=1&per_page=10&q=${this.searchState.query}`)
-        .then((response: AxiosResponse<RawResult>) => {
-          this.searchState.repositories = response.data.items;
+        .then((response: AxiosResponse<RawResult<RawRepository>>) => {
+          this.searchState.results = response.data.items;
         })
         .finally(() => {
           this.searchState.loading = false;
@@ -68,7 +68,6 @@ export default Vue.extend({
   },
 
   mounted(): void {
-    this.searchState.query = "vue";
     this.runSearch();
   }
 });

@@ -9,12 +9,12 @@ export interface RawRepository {
   score: number;
 }
 
-export interface SearchState {
+export interface SearchState<T> {
   query: string;
   loading: boolean;
-  repositories: RawRepository[];
+  results: T[];
 }
 
-export interface RawResult {
-  items: RawRepository[];
+export interface RawResult<T> {
+  items: T[];
 }
