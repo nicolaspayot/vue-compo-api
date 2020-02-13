@@ -7,7 +7,7 @@
     <SearchLoader v-if="searchState.loading" />
 
     <section class="search__results" v-else>
-      <SearchResult v-for="repository of orderedRepositories" :key="repository.id" :repository="repository" />
+      <SearchResult v-for="result of orderedResults" :key="result.id" :repository="result" />
     </section>
   </main>
 </template>
@@ -43,7 +43,7 @@ export default Vue.extend({
   },
 
   computed: {
-    orderedRepositories(): RawRepository[] {
+    orderedResults(): RawRepository[] {
       return orderBy(this.searchState.results, this.orderByProp, "desc");
     }
   },
