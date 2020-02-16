@@ -2,7 +2,7 @@
   <div class="search__order">
     <label>Order by</label>
     <div class="search__select">
-      <select :value="value" @input="onInput($event.target.value)">
+      <select :value="value" @input="onInput(Number($event.target.value))">
         <option v-for="(option, index) of options" :key="index" :value="index">{{ option.label }}</option>
       </select>
       <FontAwesomeIcon icon="angle-down" />
