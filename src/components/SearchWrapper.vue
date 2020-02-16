@@ -19,21 +19,22 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import orderBy from "lodash/orderBy";
+import { createComponent, computed } from "@vue/composition-api";
 import githubAPI from "../api/";
-import { RawRepository, RawResult, SearchState, OrderOption } from "../types";
+import { RawRepository, RawResult } from "../types";
 import { AxiosResponse } from "axios";
 import SearchInput from "./SearchInput.vue";
 import SearchOrder from "./SearchOrder.vue";
 import SearchLoader from "./SearchLoader.vue";
 import SearchResult from "./SearchResult.vue";
+import useSearch from "../use/search";
+import useOrder from "../use/order";
 
 const itemsWithScore = (items: RawRepository[]) => {
   return items.map((item, index) => ({ ...item, score: items.length - index }));
 };
 
-export default Vue.extend({
+export default createComponent({
   components: {
     SearchInput,
     SearchOrder,
@@ -41,49 +42,33 @@ export default Vue.extend({
     SearchResult
   },
 
-  data() {
-    return {
-      searchState: {
-        query: "vue",
-        loading: false,
-        results: []
-      } as SearchState<RawRepository>,
-      orderOptions: [
+  setup() {
+    // search feature
+    const getRepositories = (query: string) =>
+      githubAPI
+        .get(`/search/repositories?page=1&per_page=10&q=${query}`)
+        .then((response: AxiosResponse<RawResult<RawRepository>>) => itemsWithScore(response.data.items));
+
+    const { searchState, runSearch } = useSearch("vue", getRepositories);
+
+    // order feature
+    const { orderOptions, orderIndex, orderedResults } = useOrder<RawRepository>(
+      computed(() => searchState.results),
+      [
         { label: "🌡️ score", value: "score" },
         { label: "⭐ stargazers", value: "stargazers_count" },
         { label: "⚠️ issues", value: "open_issues_count" }
-      ] as OrderOption[],
-      orderIndex: 0
+      ],
+      0
+    );
+
+    return {
+      searchState,
+      runSearch,
+      orderOptions,
+      orderIndex,
+      orderedResults
     };
-  },
-
-  computed: {
-    orderedResults(): RawRepository[] {
-      return orderBy(this.searchState.results, this.orderOptions[this.orderIndex].value, "desc");
-    }
-  },
-
-  methods: {
-    runSearch(): void {
-      if (!this.searchState.query) {
-        this.searchState.results = [];
-        return;
-      }
-
-      this.searchState.loading = true;
-      githubAPI
-        .get(`/search/repositories?page=1&per_page=10&q=${this.searchState.query}`)
-        .then((response: AxiosResponse<RawResult<RawRepository>>) => {
-          this.searchState.results = itemsWithScore(response.data.items);
-        })
-        .finally(() => {
-          this.searchState.loading = false;
-        });
-    }
-  },
-
-  mounted(): void {
-    this.runSearch();
   }
 });
 </script>
