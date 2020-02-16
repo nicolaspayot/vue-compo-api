@@ -1,6 +1,6 @@
 <template>
   <div class="search__loader">
-    <span>Looking for repositories...</span>
+    <span><slot></slot></span>
     <FontAwesomeIcon icon="circle-notch" spin />
   </div>
 </template>

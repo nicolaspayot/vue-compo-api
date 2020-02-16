@@ -2,9 +2,15 @@
   <main class="search">
     <SearchInput v-model="searchState.query" @enter="runSearch" />
 
-    <SearchOrder v-model="orderByProp" v-if="!searchState.loading && searchState.results.length > 1" />
+    <SearchOrder
+      v-if="!searchState.loading && searchState.results.length > 1"
+      v-model="orderState.selectedIndex"
+      :options="orderState.options"
+    />
 
-    <SearchLoader v-if="searchState.loading" />
+    <SearchLoader v-if="searchState.loading">
+      Looking for repositories...
+    </SearchLoader>
 
     <section class="search__results" v-else>
       <SearchResult v-for="result of orderedResults" :key="result.id" :repository="result" />
@@ -33,7 +39,14 @@ export default Vue.extend({
 
   data() {
     return {
-      orderByProp: "score",
+      orderState: {
+        options: [
+          { label: "🌡️ score", value: "score" },
+          { label: "⭐ stargazers", value: "stargazers_count" },
+          { label: "⚠️ issues", value: "open_issues_count" }
+        ],
+        selectedIndex: 0
+      },
       searchState: {
         query: "vue",
         loading: false,
@@ -44,7 +57,8 @@ export default Vue.extend({
 
   computed: {
     orderedResults(): RawRepository[] {
-      return orderBy(this.searchState.results, this.orderByProp, "desc");
+      const { options, selectedIndex } = this.orderState;
+      return orderBy(this.searchState.results, options[selectedIndex].value, "desc");
     }
   },
 
@@ -59,11 +73,15 @@ export default Vue.extend({
       githubAPI
         .get(`/search/repositories?page=1&per_page=10&q=${this.searchState.query}`)
         .then((response: AxiosResponse<RawResult<RawRepository>>) => {
-          this.searchState.results = response.data.items;
+          this.searchState.results = this.itemsWithScore(response.data.items);
         })
         .finally(() => {
           this.searchState.loading = false;
         });
+    },
+
+    itemsWithScore(items: RawRepository[]) {
+      return items.map((item, index) => ({ ...item, score: items.length - index }));
     }
   },
 

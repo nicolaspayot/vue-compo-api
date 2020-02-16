@@ -3,9 +3,7 @@
     <label>Order by</label>
     <div class="search__select">
       <select :value="value" @input="onInput($event.target.value)">
-        <option value="score">🌡️ score</option>
-        <option value="stargazers_count">⭐ stargazers</option>
-        <option value="open_issues_count">⚠️ issues</option>
+        <option v-for="(option, index) of options" :key="index" :value="index">{{ option.label }}</option>
       </select>
       <FontAwesomeIcon icon="angle-down" />
     </div>
@@ -15,17 +13,26 @@
 <script lang="ts">
 import Vue from "vue";
 
+interface Option {
+  label: string;
+  value: string;
+}
+
 export default Vue.extend({
   props: {
+    options: {
+      type: Array as () => Option[],
+      required: true
+    },
     value: {
-      type: String,
+      type: Number,
       required: true
     }
   },
 
   methods: {
-    onInput(value: string): void {
-      this.$emit("input", value);
+    onInput(index: number): void {
+      this.$emit("input", index);
     }
   }
 });
