@@ -18,3 +18,8 @@ export interface SearchState<T> {
 export interface RawResult<T> {
   items: T[];
 }
+
+export interface OrderOption {
+  label: string;
+  value: string;
+}

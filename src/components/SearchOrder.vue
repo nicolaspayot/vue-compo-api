@@ -12,16 +12,12 @@
 
 <script lang="ts">
 import Vue from "vue";
-
-interface Option {
-  label: string;
-  value: string;
-}
+import { OrderOption } from "../types";
 
 export default Vue.extend({
   props: {
     options: {
-      type: Array as () => Option[],
+      type: Array as () => OrderOption[],
       required: true
     },
     value: {

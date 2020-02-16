@@ -22,7 +22,7 @@
 import Vue from "vue";
 import orderBy from "lodash/orderBy";
 import githubAPI from "../api/";
-import { RawRepository, RawResult, SearchState } from "../types";
+import { RawRepository, RawResult, SearchState, OrderOption } from "../types";
 import { AxiosResponse } from "axios";
 import SearchInput from "./SearchInput.vue";
 import SearchOrder from "./SearchOrder.vue";
@@ -52,7 +52,7 @@ export default Vue.extend({
         { label: "🌡️ score", value: "score" },
         { label: "⭐ stargazers", value: "stargazers_count" },
         { label: "⚠️ issues", value: "open_issues_count" }
-      ],
+      ] as OrderOption[],
       orderIndex: 0
     };
   },
