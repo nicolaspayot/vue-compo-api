@@ -4,8 +4,8 @@
 
     <SearchOrder
       v-if="!searchState.loading && searchState.results.length > 1"
-      v-model="orderState.selectedIndex"
-      :options="orderState.options"
+      v-model="orderIndex"
+      :options="orderOptions"
     />
 
     <SearchLoader v-if="searchState.loading">
@@ -29,6 +29,10 @@ import SearchOrder from "./SearchOrder.vue";
 import SearchLoader from "./SearchLoader.vue";
 import SearchResult from "./SearchResult.vue";
 
+const itemsWithScore = (items: RawRepository[]) => {
+  return items.map((item, index) => ({ ...item, score: items.length - index }));
+};
+
 export default Vue.extend({
   components: {
     SearchInput,
@@ -39,26 +43,23 @@ export default Vue.extend({
 
   data() {
     return {
-      orderState: {
-        options: [
-          { label: "🌡️ score", value: "score" },
-          { label: "⭐ stargazers", value: "stargazers_count" },
-          { label: "⚠️ issues", value: "open_issues_count" }
-        ],
-        selectedIndex: 0
-      },
       searchState: {
         query: "vue",
         loading: false,
         results: []
-      } as SearchState<RawRepository>
+      } as SearchState<RawRepository>,
+      orderOptions: [
+        { label: "🌡️ score", value: "score" },
+        { label: "⭐ stargazers", value: "stargazers_count" },
+        { label: "⚠️ issues", value: "open_issues_count" }
+      ],
+      orderIndex: 0
     };
   },
 
   computed: {
     orderedResults(): RawRepository[] {
-      const { options, selectedIndex } = this.orderState;
-      return orderBy(this.searchState.results, options[selectedIndex].value, "desc");
+      return orderBy(this.searchState.results, this.orderOptions[this.orderIndex].value, "desc");
     }
   },
 
@@ -73,15 +74,11 @@ export default Vue.extend({
       githubAPI
         .get(`/search/repositories?page=1&per_page=10&q=${this.searchState.query}`)
         .then((response: AxiosResponse<RawResult<RawRepository>>) => {
-          this.searchState.results = this.itemsWithScore(response.data.items);
+          this.searchState.results = itemsWithScore(response.data.items);
         })
         .finally(() => {
           this.searchState.loading = false;
         });
-    },
-
-    itemsWithScore(items: RawRepository[]) {
-      return items.map((item, index) => ({ ...item, score: items.length - index }));
     }
   },
 
